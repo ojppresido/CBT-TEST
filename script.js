@@ -138,7 +138,24 @@ class CBTExamApp {
 
         if (submitBtn) {
             submitBtn.addEventListener('click', () => {
-                this.submitExam();
+                this.showSubmitConfirmation();
+            });
+        }
+
+        // Modal buttons
+        const confirmSubmitBtn = document.getElementById('confirm-submit');
+        const cancelSubmitBtn = document.getElementById('cancel-submit');
+        
+        if (confirmSubmitBtn) {
+            confirmSubmitBtn.addEventListener('click', () => {
+                this.endExam();
+                this.hideSubmitModal();
+            });
+        }
+        
+        if (cancelSubmitBtn) {
+            cancelSubmitBtn.addEventListener('click', () => {
+                this.hideSubmitModal();
             });
         }
 
@@ -148,6 +165,28 @@ class CBTExamApp {
             restartBtn.addEventListener('click', () => {
                 this.restartExam();
             });
+        }
+        
+        // Review finish button
+        const reviewFinishBtn = document.getElementById('review-finish-btn');
+        if (reviewFinishBtn) {
+            reviewFinishBtn.addEventListener('click', () => {
+                this.finishReview();
+            });
+        }
+    }
+
+    showSubmitConfirmation() {
+        const modal = document.getElementById('submit-modal');
+        if (modal) {
+            modal.classList.add('active');
+        }
+    }
+
+    hideSubmitModal() {
+        const modal = document.getElementById('submit-modal');
+        if (modal) {
+            modal.classList.remove('active');
         }
     }
 
@@ -234,9 +273,9 @@ class CBTExamApp {
         this.currentQuestionIndex = index;
         const question = this.questions[index];
         
-        // Update question display
+        // Update question display - using innerHTML to support HTML tags like <u>
         document.getElementById('q-number').textContent = question.id;
-        document.getElementById('question-text').textContent = question.question;
+        document.getElementById('question-text').innerHTML = question.question; // Changed to innerHTML to support HTML tags
         document.getElementById('current-q').textContent = index + 1;
         document.getElementById('total-q').textContent = this.questions.length;
         
@@ -368,11 +407,8 @@ class CBTExamApp {
         });
     }
 
-    submitExam() {
-        if (confirm('Are you sure you want to submit your exam?')) {
-            this.endExam();
-        }
-    }
+    // Remove the old submitExam method since it's now handled by the modal
+    // The endExam method is still used but called from the modal confirm button
 
     endExam() {
         // Clear timer
@@ -385,6 +421,23 @@ class CBTExamApp {
         
         // Show results screen
         this.showResults(score);
+        
+        // Save exam result to database
+        this.saveExamResult(score);
+    }
+    
+    saveExamResult(score) {
+        if (examDB && examDB.db) {
+            examDB.saveExamResult(
+                document.getElementById('student-id').value,
+                this.selectedSubject,
+                this.answers,
+                score,
+                this.questions.length
+            ).catch(error => {
+                console.error('Error saving exam result:', error);
+            });
+        }
     }
 
     calculateScore() {
@@ -453,7 +506,7 @@ class CBTExamApp {
                 </div>
             </div>
             <div class="review-question">
-                <h4>${question.question}</h4>
+                <h4>${question.question}</h4>  <!-- Using question.question directly to render HTML -->
                 
                 <div class="options-review">
                     ${question.options.map(option => {
@@ -514,6 +567,27 @@ class CBTExamApp {
             questionCounter.textContent = `${this.currentQuestionIndex + 1} / ${this.questions.length}`;
         }
     }
+    
+    finishReview() {
+        // Reset exam state
+        this.currentQuestionIndex = 0;
+        this.answers = {};
+        this.examTime = 3600; // Reset to 60 minutes
+        
+        // Clear timer if it exists
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+        
+        // Update timer display
+        this.updateTimerDisplay();
+        
+        // Remove warning class from timer
+        document.getElementById('timer').classList.remove('warning');
+        
+        // Show subject selection screen again
+        this.showScreen('subject-selection-screen');
+    }
 
     restartExam() {
         // Reset exam state
@@ -532,12 +606,8 @@ class CBTExamApp {
         // Remove warning class from timer
         document.getElementById('timer').classList.remove('warning');
         
-        // Show login screen again
-        this.showScreen('login-screen');
-        
-        // Clear login form
-        document.getElementById('student-id').value = '';
-        document.getElementById('exam-code').value = '';
+        // Show subject selection screen again
+        this.showScreen('subject-selection-screen');
     }
 }
 

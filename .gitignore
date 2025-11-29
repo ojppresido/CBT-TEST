@@ -1,7 +1,4 @@
 ```
-# Dependencies
-node_modules/
-
 # Logs and temp files
 *.log
 *.tmp
@@ -16,25 +13,18 @@ node_modules/
 .vscode/
 .idea/
 
-# Build artifacts
-dist/
-build/
-target/
-
-# Python
+# Dependencies
+node_modules/
+venv/
+.venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.venv/
-venv/
-.pytest_cache/
-.mypy_cache/
-.coverage
-coverage/
-htmlcov/
 
-# Compiled files
+# Build artifacts
+dist/
+build/
 *.o
 *.obj
 *.exe
@@ -43,11 +33,16 @@ htmlcov/
 *.a
 *.out
 
-# System files
+# OS generated files
 .DS_Store
 Thumbs.db
 
-# Compressed files
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Compression
 *.zip
 *.gz
 *.tar
