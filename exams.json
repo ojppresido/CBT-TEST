@@ -2,7 +2,7 @@
   "English": [
     {
       "id": 1,
-      "question": "Choose the word that is nearest in meaning to the word underlined: The principal was absent from the meeting.",
+      "question": "Choose the word that is nearest in meaning to the <u>absent</u>: The principal was <u>absent</u> from the meeting.",
       "options": [
         {"id": "A", "text": "present"},
         {"id": "B", "text": "away"},
@@ -14,7 +14,7 @@
     },
     {
       "id": 2,
-      "question": "Choose the word that is opposite in meaning to the word underlined: The weather was pleasant.",
+      "question": "Choose the word that is opposite in meaning to the <u>pleasant</u>: The weather was <u>pleasant</u>.",
       "options": [
         {"id": "A", "text": "nice"},
         {"id": "B", "text": "unpleasant"},
@@ -50,7 +50,7 @@
     },
     {
       "id": 5,
-      "question": "Choose the word that is nearest in meaning to the word underlined: The old man was very weak.",
+      "question": "Choose the word that is nearest in meaning to the <u>weak</u>: The old man was very <u>weak</u>.",
       "options": [
         {"id": "A", "text": "strong"},
         {"id": "B", "text": "powerful"},
@@ -124,7 +124,7 @@
   "Mathematics": [
     {
       "id": 1,
-      "question": "Simplify: 3x + 2x - 5x",
+      "question": "Using BODMAS rule, simplify: 3x + 2x - 5x",
       "options": [
         {"id": "A", "text": "0"},
         {"id": "B", "text": "x"},
@@ -132,11 +132,11 @@
         {"id": "D", "text": "5x"}
       ],
       "correctAnswer": "A",
-      "explanation": "This problem involves combining like terms in algebra. Like terms are terms that have the same variable raised to the same power. In this case, 3x, 2x, and 5x are all like terms because they all contain the variable x to the first power. To combine like terms, we add or subtract their coefficients (the numbers in front of the variables) while keeping the variable part the same. So, 3x + 2x - 5x = (3 + 2 - 5)x = 0x = 0. The fundamental principle here is that when we add or subtract like terms, we're essentially counting how many of the same variable we have. In this case, we start with 3 x's, add 2 more x's (giving us 5 x's), and then subtract 5 x's, leaving us with 0 x's, or simply 0."
+      "explanation": "This problem involves combining like terms in algebra, following the BODMAS rule (Brackets, Orders, Division, Multiplication, Addition, Subtraction). BODMAS is an acronym that helps remember the order of operations in mathematics. In this expression 3x + 2x - 5x, we have addition and subtraction operations, which are performed from left to right as they have the same precedence level in BODMAS. So, 3x + 2x = 5x, then 5x - 5x = 0. The fundamental principle here is that like terms (terms with the same variable) can be combined by adding or subtracting their coefficients. BODMAS ensures we perform operations in the correct sequence, which is essential for getting the right answer in mathematical expressions."
     },
     {
       "id": 2,
-      "question": "What is the value of 2^3?",
+      "question": "Using BODMAS rule, what is the value of 2^3?",
       "options": [
         {"id": "A", "text": "6"},
         {"id": "B", "text": "8"},
@@ -144,11 +144,11 @@
         {"id": "D", "text": "12"}
       ],
       "correctAnswer": "B",
-      "explanation": "This question tests your understanding of exponents (or powers). An exponent tells us how many times to multiply the base number by itself. In 2^3, the base is 2 and the exponent is 3, which means we multiply 2 by itself 3 times: 2^3 = 2 × 2 × 2 = 8. The fundamental principle of exponents is that a^n means multiplying 'a' by itself 'n' times. It's important to note that this is different from 2×3, which would be 6. The exponentiation operation (raising to a power) is a fundamental operation in mathematics that represents repeated multiplication. Understanding exponents is crucial for more advanced mathematical concepts and is used in many real-world applications like computing compound interest, population growth, and scientific notation."
+      "explanation": "This question tests your understanding of exponents (or powers) within the BODMAS rule (Brackets, Orders, Division, Multiplication, Addition, Subtraction). In BODMAS, 'Orders' refers to exponents and roots, which are calculated before division, multiplication, addition, and subtraction. In 2^3, the exponent (Order) is 3, which means we multiply 2 by itself 3 times: 2^3 = 2 × 2 × 2 = 8. The fundamental principle of BODMAS is that we must perform operations in the correct order: first Brackets, then Orders (exponents), then Division and Multiplication (from left to right), and finally Addition and Subtraction (from left to right). This ensures we get the correct answer in mathematical expressions. Understanding BODMAS is crucial for more advanced mathematical concepts and is used in many real-world applications like computing compound interest, population growth, and scientific notation."
     },
     {
       "id": 3,
-      "question": "Find the area of a rectangle with length 8cm and width 5cm.",
+      "question": "Using BODMAS rule, find the area of a rectangle with length 8cm and width 5cm.",
       "options": [
         {"id": "A", "text": "13cm²"},
         {"id": "B", "text": "40cm²"},
@@ -156,11 +156,11 @@
         {"id": "D", "text": "35cm²"}
       ],
       "correctAnswer": "B",
-      "explanation": "This problem involves calculating the area of a rectangle, which is a fundamental concept in geometry. The formula for the area of a rectangle is Area = length × width. This formula works because area measures the amount of space inside a two-dimensional shape, and multiplying length by width gives us the total number of square units that fit inside the rectangle. For this problem: Area = 8cm × 5cm = 40cm². The units become cm² (square centimeters) because we're multiplying two measurements that are in centimeters. The fundamental principle here is that area is a measure of surface coverage, and for rectangles, it's calculated by multiplying the two perpendicular dimensions. Understanding this concept is important for real-world applications like calculating how much paint is needed for a wall, how much carpet is needed for a floor, or how much land is in a plot."
+      "explanation": "This problem involves calculating the area of a rectangle using the formula Area = length × width, following the BODMAS rule (Brackets, Orders, Division, Multiplication, Addition, Subtraction). In BODMAS, multiplication is performed before addition and subtraction, but in this case we only have a multiplication operation: Area = 8cm × 5cm = 40cm². The units become cm² (square centimeters) because we're multiplying two measurements that are in centimeters. The fundamental principle of BODMAS is that we must perform operations in the correct order: first Brackets, then Orders (exponents), then Division and Multiplication (from left to right), and finally Addition and Subtraction (from left to right). This ensures we get the correct answer in mathematical expressions. Understanding BODMAS is important for real-world applications like calculating how much paint is needed for a wall, how much carpet is needed for a floor, or how much land is in a plot, especially when calculations involve multiple operations."
     },
     {
       "id": 4,
-      "question": "Solve for x: 2x + 5 = 15",
+      "question": "Using BODMAS rule, solve for x: 2x + 5 = 15",
       "options": [
         {"id": "A", "text": "5"},
         {"id": "B", "text": "10"},
@@ -168,7 +168,7 @@
         {"id": "D", "text": "20"}
       ],
       "correctAnswer": "A",
-      "explanation": "This problem demonstrates the fundamental principles of solving linear equations. The goal is to isolate the variable x on one side of the equation. To do this, we perform the same operations on both sides of the equation to maintain balance. Starting with 2x + 5 = 15, we first subtract 5 from both sides to eliminate the constant term on the left: 2x + 5 - 5 = 15 - 5, which simplifies to 2x = 10. Next, we divide both sides by 2 to isolate x: 2x ÷ 2 = 10 ÷ 2, which gives us x = 5. The fundamental principle in solving equations is maintaining equality - whatever operation you perform on one side of the equation, you must perform on the other side as well. This ensures the equation remains balanced. The concept of inverse operations is key here: subtraction is the inverse of addition, and division is the inverse of multiplication. By applying inverse operations, we can systematically undo operations to isolate the variable."
+      "explanation": "This problem demonstrates the fundamental principles of solving linear equations while applying the BODMAS rule (Brackets, Orders, Division, Multiplication, Addition, Subtraction). When solving equations, we work backwards through the order of operations to isolate the variable. In the equation 2x + 5 = 15, according to BODMAS, we would normally perform the multiplication (2x) before the addition (+5), but when solving, we reverse this order. First, we subtract 5 from both sides: 2x + 5 - 5 = 15 - 5, which gives us 2x = 10. Then, we divide both sides by 2: 2x ÷ 2 = 10 ÷ 2, which gives us x = 5. The fundamental principle in solving equations is maintaining equality - whatever operation you perform on one side of the equation, you must perform on the other side as well. This ensures the equation remains balanced. The BODMAS rule helps us understand the order of operations in the original expression and guides us in reversing those operations when solving for the variable."
     },
     {
       "id": 5,

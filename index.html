@@ -31,11 +31,11 @@
                     <form id="login-form">
                         <div class="form-group">
                             <label for="student-id">Student ID:</label>
-                            <input type="text" id="student-id" required>
+                            <input type="text" id="student-id" placeholder="Enter your Student ID" required>
                         </div>
                         <div class="form-group">
                             <label for="exam-code">Exam Code:</label>
-                            <input type="password" id="exam-code" required>
+                            <input type="password" id="exam-code" placeholder="Enter your Exam Code" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Start Exam</button>
                     </form>
@@ -136,6 +136,18 @@
         </main>
     </div>
     
+    <!-- Exam Submission Confirmation Modal -->
+    <div id="submit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Confirm Exam Submission</h3>
+            <p>Are you sure you want to submit your exam? You will not be able to make any changes after submission.</p>
+            <div class="modal-buttons">
+                <button id="confirm-submit" class="btn btn-danger">Yes, Submit</button>
+                <button id="cancel-submit" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="database.js"></script>
     <script src="script.js"></script>
 </body>
