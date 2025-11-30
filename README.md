@@ -63,3 +63,55 @@ The application now supports loading questions from individual subject-specific 
 ## Sample Questions
 
 The application includes comprehensive questions for 8 subjects (English, Mathematics, Physics, Biology, Chemistry, Government, Economics, and Financial Accounting) with 100 questions each, organized in subject-specific JSON files. This structure allows for easy maintenance and expansion of question sets.
+
+## Mathematical Expression Formatting
+
+For proper display of mathematical expressions, including fractions, exponentials, roots, and other mathematical elements, in the Mathematics section of the CBT platform, refer to these additional resources:
+
+### Files Included
+
+1. **math_formatting_guide.md** - A markdown guide showing proper mathematical formatting
+2. **math_fractions_display.html** - An HTML file with MathJax for rendering mathematical expressions in browsers
+3. **math_fractions_example.tex** - A LaTeX document demonstrating proper mathematical formatting
+4. **math_expressions_guide.md** - A comprehensive guide to formatting all mathematical expressions including fractions, exponentials, roots, logarithms, and more
+5. **math_expressions_demo.html** - An HTML demonstration of all mathematical expressions with proper rendering using MathJax
+6. **math_expressions_example.tex** - A LaTeX document with examples of all mathematical expressions
+
+### Key Formatting Tips for Mathematical Questions
+
+1. **Fractions**: Use `\frac{numerator}{denominator}`
+   - Example: `\frac{a}{b}` renders as $\frac{a}{b}$
+
+2. **Exponentials**: Use `^{exponent}`
+   - Example: `x^{2}` renders as $x^{2}$
+   - Example: `e^{x}` renders as $e^{x}$
+   - Example: `x^{\frac{1}{2}}` renders as $x^{\frac{1}{2}}$
+
+3. **Roots**: Use `\sqrt{expression}` or `\sqrt[n]{expression}`
+   - Example: `\sqrt{16}` renders as $\sqrt{16}$
+   - Example: `\sqrt[3]{27}` renders as $\sqrt[3]{27}$
+
+4. **Logarithms**: Use `\log`, `\ln`, or `\log_{base}`
+   - Example: `\log(x)` renders as $\log(x)$
+   - Example: `\ln(x)` renders as $\ln(x)$
+   - Example: `\log_2(x)` renders as $\log_2(x)$
+
+5. **Trigonometric Functions**: Use `\sin`, `\cos`, `\tan`, etc.
+   - Example: `\sin(x)` renders as $\sin(x)$
+   - Example: `\sin^2(x)` renders as $\sin^2(x)$
+
+6. **For displayed equations (centered), use double dollar signs**:
+   - `$$\frac{a}{b}$$` for displayed fractions
+
+7. **For inline math, use single dollar signs**:
+   - `$\frac{a}{b}$` for inline fractions
+
+### Example Problem Format
+
+When creating mathematics questions, format them properly as:
+
+"Simplify: $$\frac{3^{-1} \times 9^{\frac{1}{2}}}{27^{-\frac{1}{3}}}$$"
+
+This ensures that fractions, exponentials, and other mathematical expressions are displayed correctly in the examination interface.
+
+These resources will help ensure that all mathematical expressions, especially fractions, exponentials, and other complex expressions, are displayed clearly and correctly in the mathematics questions.
