@@ -692,6 +692,10 @@ class CBTExamApp {
         // Process explanation to extract only one image (prioritizing non-SVG over SVG)
         let processedExplanation = this.processExplanationForDiagrams(cleanExplanation);
         
+        // Fix MathJax delimiters in question text, options, and explanation for review section
+        const fixedCleanQuestion = cleanQuestion.replace(/\\\\\\\(/g, '\\(').replace(/\\\\\\\)/g, '\\)').replace(/\\\\\\]/g, '\\[').replace(/\\\\\\\\]/g, '\\]');
+        const fixedProcessedExplanation = processedExplanation.replace(/\\\\\\\(/g, '\\(').replace(/\\\\\\\)/g, '\\)').replace(/\\\\\\]/g, '\\[').replace(/\\\\\\\\]/g, '\\]');
+        
         reviewContainer.innerHTML = `
             <div class="review-header">
                 <h3>Question ${this.currentQuestionIndex + 1} of ${this.questions.length}</h3>
@@ -700,12 +704,15 @@ class CBTExamApp {
                 </div>
             </div>
             <div class="review-question">
-                <h4>${cleanQuestion}</h4>  <!-- Using cleaned question to render HTML -->
+                <h4>${fixedCleanQuestion}</h4>  <!-- Using cleaned and fixed question to render HTML -->
                 
                 <div class="options-review">
                     ${question.options.map(option => {
                         const isUserSelection = userAnswer === option.id;
                         const isCorrectOption = question.correctAnswer === option.id;
+                        
+                        // Fix MathJax delimiters in option text
+                        const fixedOptionText = option.text.replace(/\\\\\\\(/g, '\\(').replace(/\\\\\\\)/g, '\\)').replace(/\\\\\\]/g, '\\[').replace(/\\\\\\\\]/g, '\\]');
                         
                         let optionClass = 'option-review';
                         if (isCorrectOption) optionClass += ' correct-answer';
@@ -714,7 +721,7 @@ class CBTExamApp {
                         
                         return `
                             <div class="${optionClass}">
-                                <strong>${option.id}.</strong> ${option.text}
+                                <strong>${option.id}.</strong> ${fixedOptionText}
                                 ${isUserSelection ? ' <span class="user-selection">(Your answer)</span>' : ''}
                                 ${isCorrectOption ? ' <span class="correct-indicator">(Correct answer)</span>' : ''}
                             </div>
@@ -724,7 +731,7 @@ class CBTExamApp {
                 
                 <div class="explanation">
                     <h5>Explanation:</h5>
-                    <p>${processedExplanation}</p>
+                    <p>${fixedProcessedExplanation}</p>
                 </div>
             </div>
         `;

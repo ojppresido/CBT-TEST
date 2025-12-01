@@ -1,4 +1,7 @@
 ```
+# Backup files
+*.js.bak
+
 # Logs
 *.log
 server.log
