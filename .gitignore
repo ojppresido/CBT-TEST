@@ -1,35 +1,36 @@
 ```
-# Backup files
-*.backup
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+target/
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+.env
+.env.local
+*.env.*
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
 
-# Environment
-.env
-.env.local
-*.env.*
-
 # Editors
 .vscode/
 .idea/
 
-# Dependencies
-node_modules/
-.venv/
-venv/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
+# Coverage
+coverage/
+htmlcov/
+.coverage
 
-# Build artifacts
-dist/
-build/
-target/
-
-# System files
+# System
 .DS_Store
 Thumbs.db
 
