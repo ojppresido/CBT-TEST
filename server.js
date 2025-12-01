@@ -4,8 +4,26 @@ const path = require('path');
 
 const PORT = 3000;
 
+// Load the diagram map at server startup
+let diagramMap = {};
+try {
+    const diagramMapData = fs.readFileSync('/workspace/math_diagram_map.json', 'utf8');
+    diagramMap = JSON.parse(diagramMapData);
+    console.log(`Loaded diagram map with ${Object.keys(diagramMap).length} diagrams`);
+} catch (error) {
+    console.error('Error loading diagram map:', error);
+    // Create an empty map if file doesn't exist
+    diagramMap = {};
+}
+
 const server = http.createServer((req, res) => {
   console.log(`Request received: ${req.method} ${req.url}`);
+  
+  // Handle API endpoints for diagram retrieval
+  if (req.url.startsWith('/api/diagram/')) {
+    handleDiagramAPI(req, res);
+    return;
+  }
   
   // Set default file to serve
   let filePath = req.url === '/' ? '/index.html' : req.url;
@@ -61,6 +79,45 @@ const server = http.createServer((req, res) => {
     }
   });
 });
+
+// Handle API requests for diagram retrieval
+function handleDiagramAPI(req, res) {
+  const urlParts = req.url.split('/');
+  const questionId = urlParts[3]; // /api/diagram/:id
+  
+  if (!questionId) {
+    res.writeHead(400);
+    res.end(JSON.stringify({ error: 'Question ID is required' }));
+    return;
+  }
+  
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  
+  if (diagramMap[questionId]) {
+    res.end(JSON.stringify({ 
+      success: true, 
+      questionId: parseInt(questionId),
+      diagram: diagramMap[questionId],
+      hasDiagram: true
+    }));
+  } else {
+    res.end(JSON.stringify({ 
+      success: true, 
+      questionId: parseInt(questionId),
+      diagram: getDefaultDiagram(questionId),
+      hasDiagram: false
+    }));
+  }
+}
+
+// Generate a default diagram when no specific diagram exists
+function getDefaultDiagram(questionId) {
+  return `<svg width="200" height="100" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="10" width="180" height="80" fill="none" stroke="gray" stroke-width="2"/>
+    <text x="100" y="55" text-anchor="middle" font-size="14" fill="gray">Question ${questionId}</text>
+    <text x="100" y="75" text-anchor="middle" font-size="12" fill="gray">No diagram available</text>
+  </svg>`;
+}
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${PORT}/`);
