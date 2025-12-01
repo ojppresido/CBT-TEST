@@ -1,9 +1,43 @@
 ```
-# Logs
+# Backup and processed files
+*.backup
+*.json.backup
+*mathematics_questions*.json
+
+# Logs and temp files
 *.log
+*.tmp
+*.swp
 
 # Environment
 .env
 .env.local
 *.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.env/
+.mypy_cache/
+.pytest_cache/
+.tox/
+.coverage
+nosetests.xml
 ```
