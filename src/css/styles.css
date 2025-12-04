@@ -636,6 +636,44 @@ header h1 {
     height: auto;
 }
 
+/* Passage and Instruction Styles */
+.passage-content {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-left: 4px solid #6c757d;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 20px;
+}
+
+.passage-content h4 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.passage-content p {
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.instruction-content {
+    background-color: #e8f4f8;
+    padding: 20px;
+    border-left: 4px solid #17a2b8;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 20px;
+}
+
+.instruction-content h4 {
+    color: #0c5460;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.instruction-content p {
+    line-height: 1.6;
+}
+
 /* Modal Styles */
 .modal-overlay {
     display: none;
