@@ -1,2 +1,5 @@
 Loaded diagram map with 17 diagrams
 Server running at http://localhost:8080/
+Request received: GET /
+Request received: GET /english_questions_viewer.html
+Request received: GET /src/data/subjects/english_questions_jamb_2010.json

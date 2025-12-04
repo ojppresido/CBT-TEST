@@ -95,7 +95,7 @@ class CBTExamApp {
                     this.questions = await examDB.getQuestionsBySubject(subject);
                     if (this.questions.length > 0) {
                         console.log(`Loaded ${this.questions.length} questions from database for ${subject}`);
-                        this.selectRandomQuestions(); // Select 10 random questions
+                        this.selectRandomQuestions(); // Select 10 random questions (or all for English)
                         this.renderQuestionList(); // Initialize the question list after loading questions
                         this.showScreen('login-screen');
                         return;
@@ -118,10 +118,29 @@ class CBTExamApp {
             
             const subjectData = await response.json();
             
-            if (subjectData && subjectData.questions) {
-                this.questions = subjectData.questions;
+            if (subjectData) {
+                // For English, we need to handle the full data structure with passages and instructions
+                if (subject === 'English' && subjectData.questions) {
+                    // Store the complete English data structure
+                    this.englishData = subjectData;
+                    
+                    // For English, we'll still use this.questions array but in the correct order
+                    // based on passages and instructions structure
+                    this.questions = subjectData.questions;
+                    
+                    // For English, we want to maintain the original question order and IDs
+                    console.log(`Loaded ${this.questions.length} English questions with ${subjectData.passages.length} passages and ${subjectData.instructions.length} instructions`);
+                } else if (subjectData.questions) {
+                    // For other subjects, use questions directly
+                    this.questions = subjectData.questions;
+                } else {
+                    console.error(`Subject ${subject} not found in exams data`);
+                    alert(`Questions for ${subject} are not available.`);
+                    return;
+                }
+                
                 // Optionally, add questions to database for future use
-                if (examDB && examDB.db) {
+                if (examDB && examDB.db && subjectData.questions) {
                     try {
                         await examDB.addQuestions(subject, subjectData.questions);
                         console.log(`Added ${subjectData.questions.length} questions to database for ${subject}`);
@@ -129,7 +148,8 @@ class CBTExamApp {
                         console.error('Error adding questions to database:', addError);
                     }
                 }
-                this.selectRandomQuestions(); // Select 10 random questions
+                
+                this.selectRandomQuestions(); // Select 10 random questions (or all for English)
                 this.renderQuestionList(); // Initialize the question list after loading questions
                 this.showScreen('login-screen');
             } else {
@@ -142,12 +162,17 @@ class CBTExamApp {
         }
     }
 
-    // Select questions based on subject - for English, use all questions in order; for others, select random
+    // Select questions based on subject - for English, use all questions in order with passages and instructions; for others, select random
     selectRandomQuestions() {
         // For English subject, we want to use all questions in the original order
         // following passages and instructions structure
         if (this.selectedSubject === 'English') {
-            console.log(`English subject selected - using all ${this.questions.length} questions in original order`);
+            console.log(`English subject selected - using all ${this.questions.length} questions in original order with passages and instructions`);
+            // For English, we will restructure the questions array to include passage and instruction content
+            // as special question types that will be displayed in the UI
+            if (this.englishData) {
+                this.restructureEnglishQuestions();
+            }
             return; // Don't modify the questions array for English
         }
         
@@ -180,6 +205,91 @@ class CBTExamApp {
         });
         
         console.log(`Selected ${this.questions.length} random questions from original pool with new sequential IDs`);
+    }
+    
+    // Restructure English questions to include passages and instructions in display order
+    restructureEnglishQuestions() {
+        if (!this.englishData) return;
+        
+        // Create a new array that includes passages and instructions in the correct order
+        const restructuredQuestions = [];
+        
+        // First, add passages with their corresponding questions
+        if (this.englishData.passages) {
+            this.englishData.passages.forEach(passage => {
+                // Add a special passage content item
+                restructuredQuestions.push({
+                    id: `passage-${passage.id}`,
+                    type: 'passage',
+                    title: passage.id,
+                    content: passage.text,
+                    isPassage: true
+                });
+                
+                // Find and add questions related to this passage
+                const passageQuestions = this.questions.filter(q => q.passageId === passage.id);
+                passageQuestions.forEach(question => {
+                    restructuredQuestions.push({
+                        ...question,
+                        isPassageQuestion: true
+                    });
+                });
+            });
+        }
+        
+        // Then, add instructions followed by their corresponding questions
+        if (this.englishData.instructions) {
+            this.englishData.instructions.forEach((instruction, index) => {
+                // Add a special instruction content item
+                restructuredQuestions.push({
+                    id: `instruction-${instruction.id}`,
+                    type: 'instruction',
+                    title: instruction.id,
+                    content: instruction.text,
+                    isInstruction: true
+                });
+                
+                // Find and add questions related to this instruction based on question ranges
+                // Based on the data structure, questions 26-35 relate to Instruction 1, 36-50 to Instruction 2, etc.
+                let startId, endId;
+                switch(index + 1) {
+                    case 1: startId = 26; endId = 35; break; // Instruction 1: questions 26-35
+                    case 2: startId = 36; endId = 50; break; // Instruction 2: questions 36-50
+                    case 3: startId = 51; endId = 65; break; // Instruction 3: questions 51-65
+                    case 4: startId = 66; endId = 85; break; // Instruction 4: questions 66-85
+                    case 5: startId = 86; endId = 88; break; // Instruction 5: questions 86-88
+                    case 6: startId = 89; endId = 91; break; // Instruction 6: questions 89-91
+                    case 7: startId = 92; endId = 94; break; // Instruction 7: questions 92-94
+                    case 8: startId = 95; endId = 97; break; // Instruction 8: questions 95-97
+                    case 9: startId = 98; endId = 100; break; // Instruction 9: questions 98-100
+                    default: startId = 1; endId = 0; break;
+                }
+
+                if (startId && endId) {
+                    const instructionQuestions = this.questions.filter(q => 
+                        q.id >= startId && q.id <= endId && !q.passageId
+                    );
+                    
+                    instructionQuestions.forEach(question => {
+                        restructuredQuestions.push({
+                            ...question,
+                            isInstructionQuestion: true
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Add any remaining questions that weren't associated with passages or instructions
+        const allProcessedQuestionIds = new Set(restructuredQuestions.filter(item => !item.isPassage && !item.isInstruction).map(item => item.id));
+        this.questions.forEach(question => {
+            if (!allProcessedQuestionIds.has(question.id) && !question.passageId) {
+                restructuredQuestions.push(question);
+            }
+        });
+        
+        this.questions = restructuredQuestions;
+        console.log(`Restructured English questions: ${restructuredQuestions.length} items total (including passages and instructions)`);
     }
 
     // Determine if a question needs a diagram based on keywords
