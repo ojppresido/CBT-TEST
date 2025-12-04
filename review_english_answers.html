@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Questions Viewer - JAMB 2010</title>
+    <title>Review English Answers - JAMB 2010</title>
     <style>
         * {
             margin: 0;
@@ -29,7 +29,7 @@
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -64,7 +64,7 @@
         .stat-number {
             font-size: 2rem;
             font-weight: bold;
-            color: #007bff;
+            color: #28a745;
         }
 
         .stat-label {
@@ -106,7 +106,7 @@
 
         .question-id {
             font-weight: bold;
-            color: #007bff;
+            color: #28a745;
             font-size: 1.2rem;
         }
 
@@ -134,7 +134,7 @@
 
         .option-letter {
             font-weight: bold;
-            color: #007bff;
+            color: #28a745;
             margin-right: 10px;
             min-width: 20px;
         }
@@ -211,14 +211,6 @@
         }
 
         @media (max-width: 768px) {
-            .search-container {
-                flex-direction: column;
-            }
-            
-            .category-filters {
-                justify-content: center;
-            }
-            
             .question-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -230,10 +222,9 @@
 <body>
     <div class="container">
         <header>
-            <h1>📖 English Questions Viewer</h1>
-            <p class="subtitle">JAMB 2010 English Language Examination</p>
+            <h1>📖 Review English Answers</h1>
+            <p class="subtitle">JAMB 2010 English Language Examination - All Questions with Answers & Explanations</p>
         </header>
-
 
         <div class="stats">
             <div class="stat-card">
@@ -264,8 +255,6 @@
     <script>
         // English questions data will be loaded here
         let englishQuestions = [];
-        let currentCategory = 'all';
-        let currentSearch = '';
 
         // Load questions from the server
         async function loadQuestions() {
@@ -387,10 +376,6 @@
             const questionCard = document.createElement('div');
             questionCard.className = 'question-card';
             
-            const category = getQuestionCategory(question);
-            const categoryClass = `category-${category}`;
-            questionCard.classList.add(categoryClass);
-            
             questionCard.innerHTML = `
                 <div class="question-header">
                     <div class="question-id">Question ${question.id}</div>
@@ -421,40 +406,10 @@
             return questionCard;
         }
 
-        // Determine question category
-        function getQuestionCategory(question) {
-            if (question.passageId) return 'comprehension';
-            
-            const questionText = question.question.toLowerCase();
-            
-            if (questionText.includes('gap') || questionText.includes('fill') || 
-                questionText.includes('complete') || questionText.includes('best completes')) {
-                return 'lexis';
-            }
-            
-            if (questionText.includes('opposite') || questionText.includes('nearest') || 
-                questionText.includes('meaning')) {
-                return 'vocabulary';
-            }
-            
-            if (questionText.includes('vowel') || questionText.includes('sound')) {
-                return 'phonetics';
-            }
-            
-            if (questionText.includes('jaundiced eye') || questionText.includes('steer a middle course') || 
-                questionText.includes('axe to grind') || questionText.includes('idiom') || 
-                questionText.includes('expression')) {
-                return 'idioms';
-            }
-            
-            return 'other';
-        }
-
         // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
             loadQuestions();
         });
-
     </script>
 </body>
 </html>
