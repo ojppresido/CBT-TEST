@@ -6,7 +6,7 @@ class CBTExamApp {
         this.currentScreen = 'login-screen';
         this.currentQuestionIndex = 0;
         this.answers = {};
-        this.examTime = 3600; // 60 minutes in seconds
+        this.examTime = 3600; // 60 minutes in seconds for most subjects
         this.timerInterval = null;
         this.questions = [];
         this.selectedSubject = '';
@@ -142,8 +142,16 @@ class CBTExamApp {
         }
     }
 
-    // Select 10 random questions from the available questions
+    // Select questions based on subject - for English, use all questions in order; for others, select random
     selectRandomQuestions() {
+        // For English subject, we want to use all questions in the original order
+        // following passages and instructions structure
+        if (this.selectedSubject === 'English') {
+            console.log(`English subject selected - using all ${this.questions.length} questions in original order`);
+            return; // Don't modify the questions array for English
+        }
+        
+        // For other subjects, use the random selection as before
         if (this.questions.length <= 10) {
             // If there are 10 or fewer questions, use all of them
             return;
@@ -396,6 +404,13 @@ class CBTExamApp {
     }
 
     startExam() {
+        // Adjust exam time based on subject - English has 100 questions so needs more time
+        if (this.selectedSubject === 'English') {
+            this.examTime = 7200; // 120 minutes for 100 English questions
+        } else {
+            this.examTime = 3600; // 60 minutes for other subjects
+        }
+        
         this.showScreen('exam-screen');
         this.startTimer();
         this.currentQuestionIndex = 0; // Reset to first question
