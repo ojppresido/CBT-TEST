@@ -1,8 +1,8 @@
 ```
-# Backup files
-*.js.bak
-
-# Logs
+# Logs and temp files
 *.log
-server.log
+*.tmp
+
+# Backup files
+*.backup
 ```
