@@ -6,66 +6,20 @@ class CBTExamApp {
         this.currentScreen = 'login-screen';
         this.currentQuestionIndex = 0;
         this.answers = {};
-        this.examTime = 3600; // 60 minutes in seconds for most subjects
+        this.examTime = 3600; // 60 minutes in seconds
         this.timerInterval = null;
         this.questions = [];
         this.selectedSubject = '';
         this.selectedYear = 'jamb_2010'; // Default year
-        this.subjects = ['English', 'Mathematics', 'Physics', 'Biology', 'Chemistry', 'Government', 'Economics', 'Financial_Account']; // Will be populated dynamically
+        this.subjects = ['English', 'Mathematics', 'Physics', 'Biology', 'Chemistry', 'Government', 'Economics', 'Financial_Account'];
         this.years = ['jamb_2010', 'jamb_2011', 'jamb_2012', 'jamb_2013', 'jamb_2014', 'jamb_2015', 'jamb_2016', 'jamb_2017', 'jamb_2018', 'jamb_2019']; // Available years
         
         // Initialize database
         this.initDatabase();
         
         this.initializeEventListeners();
-        this.loadAvailableSubjects().then(() => {
-            this.renderSubjectSelection();
-            this.renderYearSelection();
-        });
-    }
-    
-    async loadAvailableSubjects() {
-        try {
-            const possibleSubjects = [
-                'English', 'Mathematics', 'Physics', 'Biology', 
-                'Chemistry', 'Government', 'Economics', 'Financial_Account'
-            ];
-            
-            // Test which subjects have available files by checking for at least one year file
-            const availableSubjects = [];
-            for (const subject of possibleSubjects) {
-                // Check if this subject has at least one year file available
-                let hasFiles = false;
-                
-                // Check all available years for this subject
-                for (const year of this.years) {
-                    const fileName = `src/data/subjects/${subject.toLowerCase()}_questions_${year}.json`;
-                    try {
-                        const response = await fetch(fileName);
-                        if (response.ok) {
-                            hasFiles = true;
-                            break; // Found a valid file, no need to check other years for this subject
-                        }
-                    } catch (error) {
-                        // Continue to next year if fetch fails
-                        continue;
-                    }
-                }
-                
-                if (hasFiles) {
-                    availableSubjects.push(subject);
-                } else {
-                    console.log(`Subject ${subject} not available - no question files found`);
-                }
-            }
-            
-            this.subjects = availableSubjects;
-            console.log('Available subjects loaded:', this.subjects);
-        } catch (error) {
-            console.error('Error loading available subjects:', error);
-            // Fallback to default subjects if detection fails
-            this.subjects = ['English', 'Mathematics', 'Physics', 'Biology', 'Chemistry', 'Government', 'Economics', 'Financial_Account'];
-        }
+        this.renderSubjectSelection();
+        this.renderYearSelection();
     }
     
     async initDatabase() {
@@ -97,34 +51,21 @@ class CBTExamApp {
             const subjectBtn = document.createElement('button');
             subjectBtn.className = 'subject-btn';
             subjectBtn.textContent = subject.replace('_', ' ');
-            subjectBtn.addEventListener('click', async () => {
+            subjectBtn.addEventListener('click', () => {
                 this.selectedSubject = subject;
-                // For English, automatically set year to 2010 since only 2010 questions are available
-                if (subject === 'English') {
-                    this.selectedYear = 'jamb_2010';
-                    this.loadQuestionsForSubject(subject).then(() => {
-                        this.showScreen('login-screen'); // Show login screen for English
-                    });
-                } else {
-                    // For other subjects, show year selection screen with appropriate years
-                    await this.renderYearSelection(); // Re-render years for the selected subject
-                    this.showScreen('year-selection-screen'); // Show year selection for other subjects
-                }
+                this.showScreen('year-selection-screen'); // Show year selection after subject selection
             });
             subjectContainer.appendChild(subjectBtn);
         });
     }
     
-    async renderYearSelection() {
+    renderYearSelection() {
         const yearContainer = document.getElementById('year-container');
         if (!yearContainer) return;
         
         yearContainer.innerHTML = '';
         
-        // Determine which years to show based on subject
-        const availableYears = await this.getAvailableYearsForSubject(this.selectedSubject);
-        
-        availableYears.forEach(year => {
+        this.years.forEach(year => {
             const yearBtn = document.createElement('button');
             yearBtn.className = 'year-btn';
             yearBtn.textContent = year.replace('jamb_', 'JAMB ');
@@ -136,31 +77,6 @@ class CBTExamApp {
         });
     }
     
-    async getAvailableYearsForSubject(subject) {
-        // For English, only return 2010 as it has special handling
-        if (subject === 'English') {
-            return ['jamb_2010'];
-        }
-        
-        // Check which years have available files for this subject
-        const availableYears = [];
-        for (const year of this.years) {
-            const fileName = `src/data/subjects/${subject.toLowerCase()}_questions_${year}.json`;
-            try {
-                const response = await fetch(fileName);
-                if (response.ok) {
-                    availableYears.push(year);
-                }
-            } catch (error) {
-                // Skip this year if fetch fails
-                continue;
-            }
-        }
-        
-        // If no specific years found, return default years
-        return availableYears.length > 0 ? availableYears : this.years;
-    }
-    
     async loadQuestionsForSubject(subject) {
         try {
             // Try to load from database first
@@ -169,9 +85,9 @@ class CBTExamApp {
                     this.questions = await examDB.getQuestionsBySubject(subject);
                     if (this.questions.length > 0) {
                         console.log(`Loaded ${this.questions.length} questions from database for ${subject}`);
-                        this.selectRandomQuestions(); // Select 10 random questions (or all for English)
+                        this.selectRandomQuestions(); // Select 10 random questions
                         this.renderQuestionList(); // Initialize the question list after loading questions
-                        // Don't show login screen here, let the caller decide when to show it
+                        this.showScreen('login-screen');
                         return;
                     }
                 } catch (dbError) {
@@ -192,29 +108,10 @@ class CBTExamApp {
             
             const subjectData = await response.json();
             
-            if (subjectData) {
-                // For English, we need to handle the full data structure with passages and instructions
-                if (subject === 'English' && subjectData.questions) {
-                    // Store the complete English data structure
-                    this.englishData = subjectData;
-                    
-                    // For English, we'll still use this.questions array but in the correct order
-                    // based on passages and instructions structure
-                    this.questions = subjectData.questions;
-                    
-                    // For English, we want to maintain the original question order and IDs
-                    console.log(`Loaded ${this.questions.length} English questions with ${subjectData.passages.length} passages and ${subjectData.instructions.length} instructions`);
-                } else if (subjectData.questions) {
-                    // For other subjects, use questions directly
-                    this.questions = subjectData.questions;
-                } else {
-                    console.error(`Subject ${subject} not found in exams data`);
-                    alert(`Questions for ${subject} are not available.`);
-                    return;
-                }
-                
+            if (subjectData && subjectData.questions) {
+                this.questions = subjectData.questions;
                 // Optionally, add questions to database for future use
-                if (examDB && examDB.db && subjectData.questions) {
+                if (examDB && examDB.db) {
                     try {
                         await examDB.addQuestions(subject, subjectData.questions);
                         console.log(`Added ${subjectData.questions.length} questions to database for ${subject}`);
@@ -222,10 +119,9 @@ class CBTExamApp {
                         console.error('Error adding questions to database:', addError);
                     }
                 }
-                
-                this.selectRandomQuestions(); // Select 10 random questions (or all for English)
+                this.selectRandomQuestions(); // Select 10 random questions
                 this.renderQuestionList(); // Initialize the question list after loading questions
-                // Don't show login screen here, let the caller decide when to show it
+                this.showScreen('login-screen');
             } else {
                 console.error(`Subject ${subject} not found in exams data`);
                 alert(`Questions for ${subject} are not available.`);
@@ -236,21 +132,8 @@ class CBTExamApp {
         }
     }
 
-    // Select questions based on subject - for English, use all questions in order with passages and instructions; for others, select random
+    // Select 10 random questions from the available questions
     selectRandomQuestions() {
-        // For English subject, we want to use all questions in the original order
-        // following passages and instructions structure
-        if (this.selectedSubject === 'English') {
-            console.log(`English subject selected - using all ${this.questions.length} questions in original order with passages and instructions`);
-            // For English, we will restructure the questions array to include passage and instruction content
-            // as special question types that will be displayed in the UI
-            if (this.englishData) {
-                this.restructureEnglishQuestions();
-            }
-            return; // Don't modify the questions array for English
-        }
-        
-        // For other subjects, use the random selection as before
         if (this.questions.length <= 10) {
             // If there are 10 or fewer questions, use all of them
             return;
@@ -279,87 +162,6 @@ class CBTExamApp {
         });
         
         console.log(`Selected ${this.questions.length} random questions from original pool with new sequential IDs`);
-    }
-    
-    // Restructure English questions to include passages and instructions in display order
-    restructureEnglishQuestions() {
-        if (!this.englishData) return;
-        
-        // Create a new array that includes passages and instructions in the correct order
-        const restructuredQuestions = [];
-        
-        // First, add passages with their corresponding questions
-        if (this.englishData.passages) {
-            this.englishData.passages.forEach(passage => {
-                // Add a special passage content item
-                restructuredQuestions.push({
-                    id: `passage-${passage.id}`,
-                    type: 'passage',
-                    title: passage.id,
-                    content: passage.text,
-                    isPassage: true
-                });
-                
-                // Find and add questions related to this passage, maintaining their original IDs
-                const passageQuestions = this.questions.filter(q => q.passageId === passage.id);
-                passageQuestions.forEach(question => {
-                    restructuredQuestions.push({
-                        ...question,
-                        isPassageQuestion: true
-                    });
-                });
-            });
-        }
-        
-        // Then, add instructions followed by their corresponding questions
-        if (this.englishData.instructions) {
-            this.englishData.instructions.forEach((instruction, index) => {
-                // Add a special instruction content item
-                restructuredQuestions.push({
-                    id: `instruction-${instruction.id}`,
-                    type: 'instruction',
-                    title: instruction.id,
-                    content: instruction.text,
-                    isInstruction: true
-                });
-                
-                // Find and add questions related to this instruction based on question ranges
-                // Based on the data structure, questions 26-35 relate to Instruction 1, 36-50 to Instruction 2, etc.
-                let startId, endId;
-                switch(index + 1) {
-                    case 1: startId = 26; endId = 35; break; // Instruction 1: questions 26-35
-                    case 2: startId = 36; endId = 50; break; // Instruction 2: questions 36-50
-                    case 3: startId = 51; endId = 65; break; // Instruction 3: questions 51-65
-                    case 4: startId = 66; endId = 85; break; // Instruction 4: questions 66-85
-                    case 5: startId = 86; endId = 88; break; // Instruction 5: questions 86-88
-                    case 6: startId = 89; endId = 91; break; // Instruction 6: questions 89-91
-                    case 7: startId = 92; endId = 94; break; // Instruction 7: questions 92-94
-                    case 8: startId = 95; endId = 97; break; // Instruction 8: questions 95-97
-                    case 9: startId = 98; endId = 100; break; // Instruction 9: questions 98-100
-                    default: startId = 1; endId = 0; break;
-                }
-
-                if (startId && endId) {
-                    const instructionQuestions = this.questions.filter(q => 
-                        q.id >= startId && q.id <= endId && !q.passageId
-                    );
-                    
-                    instructionQuestions.forEach(question => {
-                        restructuredQuestions.push({
-                            ...question,
-                            isInstructionQuestion: true
-                        });
-                    });
-                }
-            });
-        }
-        
-        // For English, all questions from 1-100 are already included in either passage or instruction sections
-        // No remaining questions should be added since they're all handled in the above sections
-        // The passage questions (1-25) and instruction questions (26-100) cover all 100 questions
-        
-        this.questions = restructuredQuestions;
-        console.log(`Restructured English questions: ${restructuredQuestions.length} items total (including passages and instructions)`);
     }
 
     // Determine if a question needs a diagram based on keywords
@@ -584,13 +386,6 @@ class CBTExamApp {
     }
 
     startExam() {
-        // Adjust exam time based on subject - English has 100 questions so needs more time
-        if (this.selectedSubject === 'English') {
-            this.examTime = 7200; // 120 minutes for 100 English questions
-        } else {
-            this.examTime = 3600; // 60 minutes for other subjects
-        }
-        
         this.showScreen('exam-screen');
         this.startTimer();
         this.currentQuestionIndex = 0; // Reset to first question
@@ -633,50 +428,33 @@ class CBTExamApp {
         const question = this.questions[index];
         
         // Update question display - using innerHTML to support HTML tags like <u>
-        // Update question display - using innerHTML to support HTML tags like <u>
         document.getElementById('q-number').textContent = question.id;
+        // Clean up the question text to remove BODMAS references and fix underlines
+        let cleanQuestion = question.question.replace(/using BODMAS rule/gi, '');
+        cleanQuestion = cleanQuestion.replace(/BODMAS/gi, '');
         
-        let questionHtml = '';
-        
-        // Handle different types of items: passage, instruction, or regular question
-        if (question.isPassage) {
-            // Display passage content
-            document.getElementById('q-number').textContent = question.title;
-            questionHtml = `<div class="passage-content"><h4>${question.title}</h4><p>${question.content.replace(/\n/g, '<br>')}</p></div>`;
-        } else if (question.isInstruction) {
-            // Display instruction content
-            document.getElementById('q-number').textContent = question.title;
-            questionHtml = `<div class="instruction-content"><h4>${question.title}</h4><p>${question.content}</p></div>`;
-        } else {
-            // Handle regular question
-            // Clean up the question text to remove BODMAS references and fix underlines
-            let cleanQuestion = question.question.replace(/using BODMAS rule/gi, '');
-            cleanQuestion = cleanQuestion.replace(/BODMAS/gi, '');
-            
-            // Add diagram container if available and question needs it
-            questionHtml = cleanQuestion;
-            if (question.diagram && this.questionNeedsDiagram(question.question)) {
-                // Check if the question text already contains an SVG diagram
-                if (!questionHtml.includes('<svg')) {
-                    // Decode the diagram data and add it directly to the question
-                    try {
-                        const decodedDiagram = decodeURIComponent(question.diagram);
-                        if (decodedDiagram.startsWith('<svg')) {
-                            questionHtml += `<div class="diagram-container"><h5>Diagram:</h5>${decodedDiagram}</div>`;
-                        } else {
-                            questionHtml += `<button class="diagram-btn" onclick="showDiagram('${encodeURIComponent(question.diagram)}')">Show Diagram</button>`;
-                        }
-                    } catch (e) {
+        // Add diagram container if available and question needs it
+        let questionHtml = cleanQuestion;
+        if (question.diagram && this.questionNeedsDiagram(question.question)) {
+            // Check if the question text already contains an SVG diagram
+            if (!questionHtml.includes('<svg')) {
+                // Decode the diagram data and add it directly to the question
+                try {
+                    const decodedDiagram = decodeURIComponent(question.diagram);
+                    if (decodedDiagram.startsWith('<svg')) {
+                        questionHtml += `<div class="diagram-container"><h5>Diagram:</h5>${decodedDiagram}</div>`;
+                    } else {
                         questionHtml += `<button class="diagram-btn" onclick="showDiagram('${encodeURIComponent(question.diagram)}')">Show Diagram</button>`;
                     }
+                } catch (e) {
+                    questionHtml += `<button class="diagram-btn" onclick="showDiagram('${encodeURIComponent(question.diagram)}')">Show Diagram</button>`;
                 }
             }
-            
-            // Fix MathJax delimiters from double backslashes to single backslashes for proper rendering
-            questionHtml = questionHtml.replace(/\\\\\\\\\\\\\\(/g, '\\\\(').replace(/\\\\\\\\\\\\\\)/g, '\\\\)').replace(/\\\\\\\\\\\\[/g, '\\\\[').replace(/\\\\\\\\\\\\]/g, '\\\\]');
         }
         
-        document.getElementById('question-text').innerHTML = questionHtml; // Changed to innerHTML to support HTML tags
+        // Fix MathJax delimiters from double backslashes to single backslashes for proper rendering
+        const fixedQuestionHtml = questionHtml.replace(/\\\\\\\(/g, '\\(').replace(/\\\\\\\)/g, '\\)').replace(/\\\\\\[/g, '\\[').replace(/\\\\\\]/g, '\\]');
+        document.getElementById('question-text').innerHTML = fixedQuestionHtml; // Changed to innerHTML to support HTML tags
         document.getElementById('current-q').textContent = index + 1;
         document.getElementById('total-q').textContent = this.questions.length;
         
@@ -691,15 +469,8 @@ class CBTExamApp {
             });
         }
         
-        // Render options only for regular questions (not passages or instructions)
-        if (!question.isPassage && !question.isInstruction) {
-            this.renderOptions(question);
-        } else {
-            // Show options container for passages and instructions (but it will be empty)
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-            optionsContainer.style.display = 'block'; // Keep it visible but empty
-        }
+        // Render options
+        this.renderOptions(question);
         
         // Update question list highlighting
         this.updateQuestionList();
