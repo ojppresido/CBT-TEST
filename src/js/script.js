@@ -226,7 +226,7 @@ class CBTExamApp {
                     isPassage: true
                 });
                 
-                // Find and add questions related to this passage
+                // Find and add questions related to this passage, maintaining their original IDs
                 const passageQuestions = this.questions.filter(q => q.passageId === passage.id);
                 passageQuestions.forEach(question => {
                     restructuredQuestions.push({
@@ -280,13 +280,9 @@ class CBTExamApp {
             });
         }
         
-        // Add any remaining questions that weren't associated with passages or instructions
-        const allProcessedQuestionIds = new Set(restructuredQuestions.filter(item => !item.isPassage && !item.isInstruction).map(item => item.id));
-        this.questions.forEach(question => {
-            if (!allProcessedQuestionIds.has(question.id) && !question.passageId) {
-                restructuredQuestions.push(question);
-            }
-        });
+        // For English, all questions from 1-100 are already included in either passage or instruction sections
+        // No remaining questions should be added since they're all handled in the above sections
+        // The passage questions (1-25) and instruction questions (26-100) cover all 100 questions
         
         this.questions = restructuredQuestions;
         console.log(`Restructured English questions: ${restructuredQuestions.length} items total (including passages and instructions)`);
