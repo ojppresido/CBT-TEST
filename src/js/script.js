@@ -159,9 +159,9 @@ class CBTExamApp {
                     title: instruction.id,
                     text: instruction.text,
                     question: `<div class="english-instruction"><h4>${instruction.id}</h4><p>${instruction.text}</p></div>`,
-                    options: [{ id: "NONE", text: "Continue to next section" }],
+                    options: [{ id: "NONE", text: "Continue to questions" }],
                     correctAnswer: "NONE",
-                    explanation: "This is an instruction section. Please read carefully before proceeding."
+                    explanation: "Please read the instructions carefully before attempting the questions that follow."
                 };
                 reorganizedQuestions.push(instructionQuestion);
                 
@@ -192,7 +192,7 @@ class CBTExamApp {
                     type: 'passage',
                     title: passage.id,
                     text: passage.text,
-                    question: `<div class="english-passage"><h4>${passage.id}</h4><p>${passage.text}</p></div>`,
+                    question: `<div class="english-passage"><h4>${passage.id}</h4><div class="passage-content">${passage.text}</div><div class="passage-note">Please read the above passage carefully before answering the questions that follow.</div></div>`,
                     options: [{ id: "NONE", text: "Continue to questions" }],
                     correctAnswer: "NONE",
                     explanation: "This is a passage. Please read carefully before answering the questions that follow."
@@ -723,9 +723,17 @@ class CBTExamApp {
         const container = document.getElementById('question-list-container');
         container.innerHTML = '';
 
-        this.questions.forEach((_, index) => {
+        this.questions.forEach((question, index) => {
             const button = document.createElement('button');
             button.className = 'question-btn';
+            
+            // Add specific class based on question type
+            if (question.type === 'instruction') {
+                button.classList.add('instruction');
+            } else if (question.type === 'passage') {
+                button.classList.add('passage');
+            }
+            
             button.textContent = index + 1;
             button.dataset.index = index;
             
@@ -740,6 +748,16 @@ class CBTExamApp {
     updateQuestionList() {
         const buttons = document.querySelectorAll('.question-btn');
         buttons.forEach((button, index) => {
+            // Preserve type classes (instruction, passage) when updating
+            const question = this.questions[index];
+            if (question && question.type) {
+                if (question.type === 'instruction' && !button.classList.contains('instruction')) {
+                    button.classList.add('instruction');
+                } else if (question.type === 'passage' && !button.classList.contains('passage')) {
+                    button.classList.add('passage');
+                }
+            }
+            
             button.classList.remove('answered', 'current');
             
             if (this.answers[this.questions[index].id]) {
