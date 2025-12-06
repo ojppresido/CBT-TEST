@@ -164,6 +164,22 @@ class CBTExamApp {
                     explanation: "This is an instruction section. Please read carefully before proceeding."
                 };
                 reorganizedQuestions.push(instructionQuestion);
+                
+                // Add questions related to this instruction
+                if (subjectData.questions) {
+                    const instructionQuestions = subjectData.questions.filter(q => 
+                        q.instructionId === instruction.id
+                    );
+                    
+                    instructionQuestions.forEach(question => {
+                        // Update the question ID to the sequential ID
+                        const modifiedQuestion = {
+                            ...question,
+                            id: currentId++
+                        };
+                        reorganizedQuestions.push(modifiedQuestion);
+                    });
+                }
             });
         }
 
@@ -198,10 +214,16 @@ class CBTExamApp {
             });
         }
 
-        // Add any remaining questions that are not associated with passages
+        // Add any remaining questions that are not associated with passages or instructions
         if (subjectData.questions) {
             const allPassageIds = subjectData.passages ? subjectData.passages.map(p => p.id) : [];
-            const standaloneQuestions = subjectData.questions.filter(q => !q.passageId || !allPassageIds.includes(q.passageId));
+            const allInstructionIds = subjectData.instructions ? subjectData.instructions.map(i => i.id) : [];
+            const standaloneQuestions = subjectData.questions.filter(q => {
+                const hasPassageId = q.passageId && allPassageIds.includes(q.passageId);
+                const hasInstructionId = q.instructionId && allInstructionIds.includes(q.instructionId);
+                return !hasPassageId && !hasInstructionId;
+            });
+            
             standaloneQuestions.forEach(question => {
                 const modifiedQuestion = {
                     ...question,
